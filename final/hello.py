@@ -15,17 +15,16 @@ from datetime import timedelta
 import time
 import yfinance as yf
 import streamlit as st
+
+
 import sys
 import warnings
-
 
 # Suppress all warnings
 warnings.simplefilter("ignore")
 
 # Redirect standard error output
 sys.stderr = open('/dev/null', 'w')
-
-
 
 def get_latest_stock_price(stock):
     data = stock.history()
@@ -56,6 +55,9 @@ if __name__ == '__main__':
     
     if 'Value' not in st.session_state:
         st.session_state['Value'] = 0
+    
+    if 'Add_Pass' not in st.session_state:
+        st.session_state['Add_Pass'] = 'Admin'
     # Prompt for ticker
     st.session_state['Symbol'] = st.text_input(
                     "Stock Symbol",

@@ -1,7 +1,6 @@
+python
 yfinance 
 confluent_kafka
 streamlit
-plotly
-pandas
 scikit-learn
-requirements
+

@@ -51,7 +51,7 @@ def train_model(sSymbol):
     SVR_model = Ridge(positive = True)
     model = SVR_model.fit(x, y)
 
-    return model, y
+    return model, y, x
 
 if __name__ == '__main__':
  
@@ -100,8 +100,16 @@ if __name__ == '__main__':
     # Poll for new messages from Kafka and print them.
     st.write(""" Stock Chart """)
     
-    
-    model, old = train_model(tickers)
+    if 'Model' not in st.session_state:
+        st.session_state['Model'] = 0
+    if 'Model_x' not in st.session_state:
+        st.session_state['Model_x'] = 0
+    if 'Model_y' not in st.session_state:
+        st.session_state['Model_y'] = 0
+    model, old, data = train_model(tickers)
+    st.session_state['Model'] = model
+    st.session_state['Model_x'] = data
+    st.session_state['Model_y'] = old
     chart = st.line_chart(old)
     st.title('Prediction')
 
