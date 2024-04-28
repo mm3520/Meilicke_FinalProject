@@ -45,7 +45,7 @@ def get_string_from_date(expiration_date):
 
 if __name__ == '__main__':
     
-    config_file_path = "pages/getting_started.ini"
+    config_file_path = "getting_started.ini"
     with open(config_file_path, 'r') as config_file:
         config_parser = ConfigParser()
         config_parser.read_file(config_file)
