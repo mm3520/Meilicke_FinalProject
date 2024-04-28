@@ -2,4 +2,5 @@ yfinance
 confluent_kafka
 streamlit
 scikit-learn
+path
 
