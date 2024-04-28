@@ -21,6 +21,9 @@ import sys
 import warnings
 import path
 
+dir = path.Path(__file__).abspath()
+sys.path.append(dir.parent.parent)
+
 # Suppress all warnings
 warnings.simplefilter("ignore")
 
