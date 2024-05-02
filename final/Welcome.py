@@ -20,12 +20,9 @@ import streamlit as st
 import sys
 import warnings
 
-
 # Suppress all warnings
 warnings.simplefilter("ignore")
 
-# Redirect standard error output
-sys.stderr = open('/dev/null', 'w')
 
 def get_latest_stock_price(stock):
     data = stock.history()
@@ -65,47 +62,42 @@ if __name__ == '__main__':
                     placeholder="Select Symbol"
                     )
     
-    st.session_state['Value'] = st.selectbox(
-                "Stock Value",
-                ('Open', "Close", 'High', "Low", "Volume"),
-                index=None,
-                placeholder="Select Value"
-                )
+
     ticker = st.session_state['Symbol']
     print('ticker', ticker)
-
+    if st.session_state['Symbol']:
     # Create Producer instance
-    producer = Producer(config)
-   
-    # Optional per-message delivery callback (triggered by poll() or flush())
-    # when a message has been successfully delivered or permanently
-    # failed delivery (after retries).
-    def delivery_callback(err, msg):
-        if err:
-            print('ERROR: Message failed delivery: {}'.format(err))
-        else:
-            print("Produced event to topic {topic}: key = {key:12} value = {value:12}".format(
-                topic=msg.topic(), key=msg.key().decode('utf-8'), value=msg.value().decode('utf-8')))
+        producer = Producer(config)
+    
+        # Optional per-message delivery callback (triggered by poll() or flush())
+        # when a message has been successfully delivered or permanently
+        # failed delivery (after retries).
+        def delivery_callback(err, msg):
+            if err:
+                print('ERROR: Message failed delivery: {}'.format(err))
+            else:
+                print("Produced event to topic {topic}: key = {key:12} value = {value:12}".format(
+                    topic=msg.topic(), key=msg.key().decode('utf-8'), value=msg.value().decode('utf-8')))
 
-    count = 0
-    # Produce data by repeatedly fetching today's stock prices - feel free to change
-    while True:
+        count = 0
+        # Produce data by repeatedly fetching today's stock prices - feel free to change
+        while True:
 
-        # date range
-        # sd = get_today()
-        sd = get_date_from_string('2024-04-01')
-        ed = sd + timedelta(days=1)
-        # download data
-        dfvp = yf.download(tickers=ticker, start=sd, end=ed, interval="1m")
+            # date range
+            # sd = get_today()
+            sd = get_date_from_string('2024-04-22')
+            ed = sd + timedelta(days=1)
+            # download data
+            dfvp = yf.download(tickers=ticker, start=sd, end=ed, interval="1m")
 
-        topic = ticker
-        for index, row in dfvp.iterrows():
-            value = f"{row['Close'], row['Open'], row['High'], row['Low'], row['Volume'] }"
-            print(index, row['Close']) # debug only
-            producer.produce(topic, str(index), str(value), callback=delivery_callback)
-            count += 1
-            time.sleep(5)
+            topic = ticker
+            for index, row in dfvp.iterrows():
+                value = f"{row['Close'], row['Open'], row['High'], row['Low'], row['Volume'] }"
+                print(index, row['Close']) # debug only
+                producer.produce(topic, str(index), str(value), callback=delivery_callback)
+                count += 1
+                time.sleep(5)
 
-        # Block until the messages are sent.
-        producer.poll(10000)
-        producer.flush()
+            # Block until the messages are sent.
+            producer.poll(10000)
+            producer.flush()
